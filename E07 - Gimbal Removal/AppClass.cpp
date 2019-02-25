@@ -25,9 +25,23 @@ void Application::Display(void)
 	matrix4 m4View = m_pCameraMngr->GetViewMatrix();
 	matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix();
 
-	m_m4Model = glm::rotate(IDENTITY_M4, glm::radians(m_v3Rotation.x), vector3(1.0f, 0.0f, 0.0f));
-	m_m4Model = glm::rotate(m_m4Model, glm::radians(m_v3Rotation.y), vector3(0.0f, 1.0f, 0.0f));
-	m_m4Model = glm::rotate(m_m4Model, glm::radians(m_v3Rotation.z), vector3(0.0f, 0.0f, 1.0f));
+	quaternion x = glm::angleAxis(glm::radians(m_v3Rotation.x), AXIS_X);
+	quaternion y = glm::angleAxis(glm::radians(m_v3Rotation.y), AXIS_Y);
+	quaternion z = glm::angleAxis(glm::radians(m_v3Rotation.z), AXIS_Z);
+	m_v3Rotation = glm::vec3(0, 0, 0);
+	
+	m_qOrientation *= x * y * z;
+
+	//m_m4Model = IDENTITY_M4 * glm::toMat4(m_qRotaX);
+	//m_m4Model = m_m4Model * glm::toMat4(m_qRotaY);
+	//m_m4Model = m_m4Model * glm::toMat4(m_qRotaZ);
+
+	m_m4Model = IDENTITY_M4 * toMat4(m_qOrientation);
+
+	//m_m4Model = glm::rotate(IDENTITY_M4, glm::radians(m_v3Rotation.x), vector3(1.0f, 0.0f, 0.0f));
+	//m_m4Model = glm::rotate(m_m4Model, glm::radians(m_v3Rotation.y), vector3(0.0f, 1.0f, 0.0f));
+	//m_m4Model = glm::rotate(m_m4Model, glm::radians(m_v3Rotation.z), vector3(0.0f, 0.0f, 1.0f));
+	
 	m_pMesh->Render(m4Projection, m4View, ToMatrix4(m_m4Model));
 
 	//m_qOrientation = m_qOrientation * glm::angleAxis(glm::radians(1.0f), vector3(1.0f));
