@@ -29,7 +29,8 @@ void Application::InitVariables(void)
 			m_pEntityMngr->SetModelMatrix(m4Position);
 		}
 	}
-	m_uOctantLevels = 1;
+	m_uOctantLevels = 0;
+	m_pRoot = new TheOctant(m_uOctantLevels, 5);
 	m_pEntityMngr->Update();
 }
 void Application::Update(void)
@@ -43,8 +44,10 @@ void Application::Update(void)
 	//Is the first person camera active?
 	CameraRotation();
 	
+	m_pRoot->CheckCollisions();
+
 	//Update Entity Manager
-	m_pEntityMngr->Update();
+	//m_pEntityMngr->Update();
 
 	//Add objects to render list
 	m_pEntityMngr->AddEntityToRenderList(-1, true);
@@ -55,6 +58,14 @@ void Application::Display(void)
 	ClearScreen();
 
 	//display octree
+	if (m_uOctantID == -1)
+	{
+		m_pRoot->Display();
+	}
+	else
+	{
+		m_pRoot->Display(m_uOctantID);
+	}
 	//m_pRoot->Display();
 	
 	// draw a skybox
@@ -74,6 +85,7 @@ void Application::Display(void)
 }
 void Application::Release(void)
 {
+	SafeDelete(m_pRoot);
 	//release GUI
 	ShutdownGUI();
 }
